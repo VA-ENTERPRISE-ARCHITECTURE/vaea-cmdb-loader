@@ -55,7 +55,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-install-plugin</artifactId>
-				<!-- <executions>
+				<executions>
 					<execution>
 						<id>install-oracle-jdbc</id>
 						<goals>
@@ -69,11 +69,11 @@
 							<packaging>jar</packaging>
 							<generatePom>true</generatePom>
 							<createChecksum>true</createChecksum>
-							<file>${project.basedir}/lib/ojdbc6.jar</file>
+							<!-- <file>${project.basedir}/lib/ojdbc6.jar</file> -->
 							<file>C:\Users\vhajitdivik\Documents\workspace\VASIBusinessServiceLoader\lib\ojdbc6.jar</file>
 						</configuration>
 					</execution>
-				</executions> -->
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
