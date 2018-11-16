@@ -45,7 +45,7 @@ public class VASIDBLoader {
 	    busService.setName(rs.getString("system_name"));
 	    busService.setBusinessUnit(rs.getString("business_unit"));
 	    busService.setStatus(rs.getString("status"));
-	    busService.setResponsibleOrganization(rs.getString("responsible_org"));
+	    // busService.setResponsibleOrganization(rs.getString("responsible_org"));
 
 	    return busService;
 	}
