@@ -53,15 +53,15 @@ public class VASIFileLoader {
 
 	    etlBusinessService.setSystemID(new BigDecimal(df.formatCellValue(row.getCell(0)).trim()));
 	    if (!df.formatCellValue(row.getCell(1)).trim().isEmpty())
-		etlBusinessService.setAltCIID(df.formatCellValue(row.getCell(1)).trim());
+		etlBusinessService.setSystemAcronym(df.formatCellValue(row.getCell(1)).trim());
 	    if (!df.formatCellValue(row.getCell(2)).trim().isEmpty())
 		etlBusinessService.setName(df.formatCellValue(row.getCell(2)).trim());
-	    if (!df.formatCellValue(row.getCell(3)).trim().isEmpty())
-		etlBusinessService.setBusinessUnit(df.formatCellValue(row.getCell(3)).trim());
+	    // if (!df.formatCellValue(row.getCell(3)).trim().isEmpty())
+	    // etlBusinessService.setBusinessUnit(df.formatCellValue(row.getCell(3)).trim());
 	    if (!df.formatCellValue(row.getCell(4)).trim().isEmpty())
-		etlBusinessService.setStatus(df.formatCellValue(row.getCell(4)).trim());
-	    if (!df.formatCellValue(row.getCell(5)).trim().isEmpty())
-		etlBusinessService.setBusinessImpact(df.formatCellValue(row.getCell(5)).trim());
+		etlBusinessService.setUsedFor(df.formatCellValue(row.getCell(4)).trim());
+	    // if (!df.formatCellValue(row.getCell(5)).trim().isEmpty())
+	    // etlBusinessService.setBusinessImpact(df.formatCellValue(row.getCell(5)).trim());
 	    /*
 	     * if (!df.formatCellValue(row.getCell(8)).trim().isEmpty())
 	     * etlBusinessService.setResponsibleOrganization(df.formatCellValue(row.getCell(

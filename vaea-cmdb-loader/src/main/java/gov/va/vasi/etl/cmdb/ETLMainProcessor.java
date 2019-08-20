@@ -7,6 +7,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -17,6 +18,9 @@ import gov.va.vasi.etl.cmdb.utils.PrintUtils;
 
 @Component
 public class ETLMainProcessor {
+
+    private static final Logger LOG = Logger.getLogger(ETLMainProcessor.class.getName());
+
     @Autowired
     VASIFileLoader vasiFileLoader;
     @Autowired
@@ -27,7 +31,7 @@ public class ETLMainProcessor {
     ETLOutputWriter etlOutputWriter;
 
     public void process() {
-	System.out.println("Starting the VASI CMDB ETL process .....");
+	// System.out.println("Starting the VASI CMDB ETL process .....");
 	// Make Sure proper directory structure is place.
 	if (Files.exists(Paths.get(GlobalValues.FILE_PATH))) {
 	    try {
@@ -45,7 +49,8 @@ public class ETLMainProcessor {
 		List<BusinessService> vasiList;
 		if (vasiDBLoader.isVASIDBAccessible()) {
 		    vasiList = vasiDBLoader.loadVASIData();
-		    System.out.println("Loaded " + vasiList.size() + " IT Systems from the VASI Database .....");
+		    // System.out.println("Loaded " + vasiList.size() + " IT Systems from the VASI
+		    // Database .....");//only for debug
 		} else {
 		    vasiList = vasiFileLoader.loadVASIData();
 		}
@@ -90,10 +95,10 @@ public class ETLMainProcessor {
 	    BusinessService vasiRecord = getBusinessService(cmdbRecord.getSystemID(), vasiList);
 	    if (vasiRecord == null) {
 		BusinessService delRec = new BusinessService();
-		delRec.setStatus("Retired");
+		delRec.setUsedFor("Retired");
 		delRec.setSystemID(cmdbRecord.getSystemID());
 		GlobalValues.output.add(delRec);
-		System.out.println("DELETE found " + delRec.getSystemID());
+		// System.out.println("DELETE found " + delRec.getSystemID()); //debug statement
 	    } else {
 		setUpdate(cmdbRecord, vasiRecord);
 	    }
@@ -105,10 +110,10 @@ public class ETLMainProcessor {
 	boolean updateFlag = false;
 
 	// Compare Status
-	String status = compareValues(vasiRecord.getStatus(), cmdbRecord.getStatus());
+	String status = compareValues(vasiRecord.getUsedFor(), cmdbRecord.getUsedFor());
 	if (status != null) {
 	    updateFlag = true;
-	    updatedRec.setStatus(status);
+	    updatedRec.setUsedFor(status);
 	}
 	// Compare Name
 	String name = compareValues(vasiRecord.getName(), cmdbRecord.getName());
@@ -116,28 +121,36 @@ public class ETLMainProcessor {
 	    updateFlag = true;
 	    updatedRec.setName(name);
 	}
-	// Compare AltCIId
-	String altCIID = compareValues(vasiRecord.getAltCIID(), cmdbRecord.getAltCIID());
-	if (altCIID != null) {
+	// Compare System Acronym
+	String systemAcronym = compareValues(vasiRecord.getSystemAcronym(), cmdbRecord.getSystemAcronym());
+	if (systemAcronym != null) {
 	    updateFlag = true;
-	    updatedRec.setAltCIID(altCIID);
+	    updatedRec.setSystemAcronym(systemAcronym);
 	}
 
-	// Compare BusinessUnit
-	String businessUnit = compareValues(vasiRecord.getBusinessUnit(), cmdbRecord.getBusinessUnit());
-	if (businessUnit != null) {
+	// // Compare BusinessUnit
+	// String businessUnit = compareValues(vasiRecord.getBusinessUnit(),
+	// cmdbRecord.getBusinessUnit());
+	// if (businessUnit != null) {
+	// updateFlag = true;
+	// updatedRec.setBusinessUnit(businessUnit);
+	// }
+
+	// Compare SponsorOrganization
+	String sponsorOrganization = compareValues(vasiRecord.getSponsorOrganization(),
+		cmdbRecord.getSponsorOrganization());
+	if (sponsorOrganization != null) {
 	    updateFlag = true;
-	    updatedRec.setBusinessUnit(businessUnit);
+	    updatedRec.setSponsorOrganization(sponsorOrganization);
 	}
 
+	// Compare AppCode
+	String appCode = compareValues(vasiRecord.getAppCode(), cmdbRecord.getAppCode());
+	if (appCode != null) {
+	    updateFlag = true;
+	    updatedRec.setAppCode(appCode);
+	}
 	/*
-	 * // Compare ResponsibleOrganization String responsibleOrganization =
-	 * compareValues(vasiRecord.getResponsibleOrganization(),
-	 * cmdbRecord.getResponsibleOrganization()); if (responsibleOrganization !=
-	 * null) { updateFlag = true;
-	 * updatedRec.setResponsibleOrganization(responsibleOrganization); }
-	 * 
-	 * 
 	 * // Compare Description String description =
 	 * compareValues(vasiRecord.getDescription(), cmdbRecord.getDescription()); if
 	 * (description != null) { updateFlag = true;
@@ -175,7 +188,6 @@ public class ETLMainProcessor {
 
 	if (updateFlag) {
 	    updatedRec.setSystemID(vasiRecord.getSystemID());
-	    updatedRec.setCmdbID(cmdbRecord.getCmdbID());
 	    GlobalValues.output.add(updatedRec);
 	    GlobalValues.updateCount++;
 	} else {
@@ -186,7 +198,7 @@ public class ETLMainProcessor {
     }
 
     private boolean isSystemActive(BusinessService vasiRecord) {
-	String status = vasiRecord.getStatus().trim();
+	String status = vasiRecord.getUsedFor().trim();
 	if (status.equalsIgnoreCase("Production") || status.equalsIgnoreCase("Development")) {
 	    return true;
 	}
